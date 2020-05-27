@@ -4,10 +4,23 @@ const User = require("./model/user");
 const Task = require("./model/task");
 const userRouter = require("../src/routers/user");
 const taskRouter = require("../src/routers/task");
+var bodyParser = require("body-parser");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
+    return res.status(200).json({});
+  }
+  next();
+});
 // app.use((req, res, next) => {
 //   console.log(req.method, req.path);
 //   next();
@@ -16,7 +29,13 @@ const port = process.env.PORT || 3000;
 // app.use((req, res, next) => {
 //   res.status(500).send("Site is under maintinance, check back soon");
 // });
-
+// configure the app to use bodyParser()
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+app.use(bodyParser.json());
 app.use(express.json()); // this will parse the any incoming requests in json
 app.use(userRouter);
 app.use(taskRouter);
